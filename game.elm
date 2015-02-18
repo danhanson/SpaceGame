@@ -415,8 +415,8 @@ mine time pos vel =
         , health = 0
         , action state = state
         , update state = if time <= 0
-                         then moveStrait (mine (time-state.deltas)) pos (0,-scrollSpeed) state.deltas
-                         else moveStrait (mine (time-state.deltas)) pos vel state.deltas
+                         then moveStraight (mine (time-state.deltas)) pos (0,-scrollSpeed) state.deltas
+                         else moveStraight (mine (time-state.deltas)) pos vel state.deltas
         , position = pos
         , checkCollision = within pos 60
         , collide dam = goodBulletExplosion pos
@@ -451,8 +451,8 @@ chaser weapon health pos angle =
     , checkCollision = within pos 20
     }
 
-moveStrait : (Vector->Vector->Agent)->Vector->Vector->Time->Agent
-moveStrait makeAgent position velocity time =
+moveStraight : (Vector->Vector->Agent)->Vector->Vector->Time->Agent
+moveStraight makeAgent position velocity time =
   let
     displacement = (vectorScale time velocity)
     nextPosition = (vectorAdd position displacement)
@@ -477,7 +477,7 @@ orbiter goalRadius makeAgent deltas pos vel =
     ang = angle pos vel
     radius = vectorMag pos
     speed = (vectorMag vel)*deltas
-    strait = moveStrait makeAgent pos vel deltas
+    strait = moveStraight makeAgent pos vel deltas
     radvel = speed*radius
   in
       if radius < goalRadius
@@ -561,7 +561,7 @@ basicBullet : Form->Vector->Vector->Agent
 basicBullet form pos velocity =
   let
     newForm = rotate (vectorAngle velocity) (move pos form)
-    update state = moveStrait (basicBullet form) pos velocity state.deltas
+    update state = moveStraight (basicBullet form) pos velocity state.deltas
   in
     Alive { position = pos
           , draw   = newForm
@@ -599,7 +599,7 @@ lineFlyer: Form->Weapon->Int->Vector->Vector->Agent
 lineFlyer form gun health position velocity =
     let
       makeFlyer state pos vel = lineFlyer form (updateWeapon state.deltas gun) health pos vel
-      update state = moveStrait (makeFlyer state) position velocity state.deltas
+      update state = moveStraight (makeFlyer state) position velocity state.deltas
       collide dam = applyCollision health dam (\new -> lineFlyer form gun new position velocity) (explosion position 0 30)
     in
       Alive { draw = rotate ((vectorAngle velocity)-(degrees 90)) (move position triangleShip)
@@ -619,7 +619,7 @@ rocket pos vel = Alive
            |> filled yellow
            |> move pos
            |> rotate ((vectorAngle vel) - (degrees 90))
-  , update state = moveStrait rocket pos vel state.deltas
+  , update state = moveStraight rocket pos vel state.deltas
   , action state = state
   , collide dam = (explosion pos 2 100)
   , health = 0
