@@ -19,18 +19,6 @@ type alias Vector = (Float,Float)
 
 type alias Input = {time:Time,dirs:Vector,press:Bool}
 
-{-
-type alias AgentRec =
-  { update:State->Agent
-  , action:State->State
-  , draw:Form
-  , collide:Int->Agent
-  , checkCollision:Agent->Bool
-  , position:Vector
-  , health:Int
-  }
--}
-
 type Agent = Alive { update:State->Agent
                    , action:State->State
                    , draw:Form
@@ -44,12 +32,6 @@ type Agent = Alive { update:State->Agent
 type alias Weapon =
   { coolDown: Float
   , wait: Float
-  , action: Vector->Float->State->State
-  }
-
-type alias PlayerWeapon =
-  { coolDown : Time
-  , wait : Time
   , action: Vector->Float->State->State
   }
 
